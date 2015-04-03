@@ -37,6 +37,6 @@ int main(void) {
 		getchar();
 		system("clear");
 	} while(user_option != 0);
-	
+	free_resources(list);
 	return 0;
 }
