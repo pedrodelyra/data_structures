@@ -19,4 +19,6 @@ void remove_node(linked_list * const list, const int data);
 
 void print_list(linked_list * const list);
 
+void free_resources(linked_list *list);
+
 #endif
