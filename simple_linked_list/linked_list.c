@@ -28,9 +28,9 @@ void add_node(linked_list * const list, const int data) {
 }
 
 void remove_node(linked_list * const list, const int data) {
-	if(list->head != NULL) {
+	if(list->head) {
 		node* node_ptr = list->head;
-		while(node_ptr->next != NULL) {
+		while(node_ptr->next) {
 			if(node_ptr->next->data == data) {
 				node* removed_node = node_ptr->next;
 				node_ptr->next = node_ptr->next->next;
@@ -51,7 +51,7 @@ void print_list(const linked_list * const list) {
 	node* node_ptr = list->head;
 	printf("List\n[");
 	if(list->size > 0) {
-		while(node_ptr->next != NULL) {
+		while(node_ptr->next) {
 			printf("%d, ", node_ptr->data);
 			node_ptr = node_ptr->next;
 		}
@@ -64,7 +64,7 @@ void print_list(const linked_list * const list) {
 void free_resources(linked_list *list) {
 	node* node_ptr = list->head;
 	if(list->size > 0) {
-		while(node_ptr != NULL) {
+		while(node_ptr) {
 			node* removed_node = node_ptr;
 			node_ptr = node_ptr->next;
 			free(removed_node);

@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "double_linked_list.h"
+#include "circular_doubly_linked_list.h"
 
 int main(void) {
-	double_linked_list* list = create_list();
+	circular_doubly_linked_list* list = create_list();
 	int user_option = 0;
 	int input_buffer = 0;
 

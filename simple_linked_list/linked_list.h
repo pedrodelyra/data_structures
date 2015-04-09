@@ -1,6 +1,3 @@
-#ifndef LIST_H
-#define LIST_H
-
 typedef struct _node {
 	int data;
 	struct _node* next;
@@ -20,5 +17,3 @@ void remove_node(linked_list * const list, const int data);
 void print_list(linked_list * const list);
 
 void free_resources(linked_list *list);
-
-#endif

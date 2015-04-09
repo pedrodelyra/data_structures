@@ -11,13 +11,13 @@ typedef struct _list {
 	int size;
 	node *head;
 	node *tail;
-} double_linked_list;
+} circular_doubly_linked_list;
 
 /*
 	Cria e inicializa uma lista encadeada.
 */
-double_linked_list *create_list(void) {
-	double_linked_list* new_list = malloc(sizeof(double_linked_list));
+circular_doubly_linked_list *create_list(void) {
+	circular_doubly_linked_list* new_list = malloc(sizeof(circular_doubly_linked_list));
 	new_list->size = 0;
 	new_list->head = NULL;
 	new_list->tail = NULL;
@@ -25,26 +25,31 @@ double_linked_list *create_list(void) {
 }
 
 /*
-	Insere um dado na lista encadeada. Recebe como argumentos a lista e o dado a ser inserido. Lista orientada da head para o tail.
+	Insere um dado na lista circular. Recebe como argumentos a lista e o dado a ser inserido. Lista orientada da head para o tail.
 */
-void add_node(double_linked_list * const list, const int data) {
+void add_node(circular_doubly_linked_list * const list, const int data) {
 	node* new_node = malloc(sizeof(node));
 	new_node->data = data;
-	new_node->next = NULL;
-	new_node->previous = list->tail;
-  list->tail = new_node;
-
-  if(!list->head)
-		list->head = list->tail;
-	else
+	
+	// lista vazia
+	if(!list->head) {
+		list->head = list->tail = new_node;
+		list->head->next = list->head->previous = list->head;
+	} else {
+		// lista com um ou mais elementos
+		new_node->previous = list->tail;
+		list->tail = new_node;
+		new_node->next = list->head;
 		new_node->previous->next = new_node;
+		list->head->previous = new_node;
+	}
 
  	printf("Element added successfully!\n\n");
 		
 	list->size++;
 }
 
-void remove_node(double_linked_list * const list, const int data) {
+void remove_node(circular_doubly_linked_list * const list, const int data) {
 	if(list->size > 0) {
 		// caso em que a lista possui um único elemento
 		if(list->head == list->tail) {
@@ -60,18 +65,21 @@ void remove_node(double_linked_list * const list, const int data) {
 		} else {
 			// caso em que a lista possui múltiplos elementos
 			node* node_ptr = list->head;
-			while(node_ptr) {
+
+			do {
 				// elemento encontrado
 				if(node_ptr->data == data) {
 					// caso em que o elemento é a cabeça
 					if(node_ptr == list->head) {
-						node_ptr->next->previous = NULL;
+						node_ptr->next->previous = list->tail;
 						list->head = node_ptr->next;
+						list->tail->next = list->head;
 						free(node_ptr);
 					// caso em que o elemento é o rabo
 					} else if(node_ptr == list->tail) {
-						node_ptr->previous->next = NULL;
+						node_ptr->previous->next = list->head;
 						list->tail = node_ptr->previous;
+						list->head->previous = list->tail;
 						free(node_ptr);
 					}	else {
 						node_ptr->next->previous = node_ptr->previous;
@@ -83,7 +91,7 @@ void remove_node(double_linked_list * const list, const int data) {
 					return;
 				}
 				node_ptr = node_ptr->next;
-			}
+			} while(node_ptr != list->head);
 			printf("Element does not exist!\n");
 		}
 	}	else {
@@ -94,7 +102,7 @@ void remove_node(double_linked_list * const list, const int data) {
 /*
 	Exibe os elementos que constituem a lista. Recebe a lista como primeiro argumento e um argumento que especifica se a lista deve ser exibida na ordem original (0) ou na ordem inversa (!= 0)
 */
-void display_list(const double_linked_list * const list, int displaying_order) {
+void display_list(const circular_doubly_linked_list * const list, int displaying_order) {
 	node* node_ptr = (!displaying_order) ? list->head : list->tail;
 	void original_order(node **);
 	void reverse_order(node **);
@@ -105,7 +113,7 @@ void display_list(const double_linked_list * const list, int displaying_order) {
 	printf("List\n[");
 
 	if(list->size > 0) {
-
+		
 		(*displaying_mode[displaying_order])(&node_ptr);
 
 		printf("%d]\n", node_ptr->data);
@@ -118,10 +126,10 @@ void display_list(const double_linked_list * const list, int displaying_order) {
 /*
 	Libera a memória utilizada pela lista
 */
-void free_resources(double_linked_list *list) {
+void free_resources(circular_doubly_linked_list *list) {
 	node* node_ptr = list->head;
 	if(list->size > 0) {
-		while(node_ptr != NULL) {
+		while(node_ptr) {
 			node* removed_node = node_ptr;
 			node_ptr = node_ptr->next;
 			free(removed_node);
@@ -133,8 +141,9 @@ void free_resources(double_linked_list *list) {
 /*
 	Define a lógica de exibição dos elementos na ordem original
 */
-void original_order(node **node_ptr) {	
-	while((*node_ptr)->next) {
+void original_order(node **node_ptr) {
+	node* head = *node_ptr;
+	while((*node_ptr)->next != head) {
 		printf("%d, ", (*node_ptr)->data);
 		*node_ptr = (*node_ptr)->next;
 	}
@@ -145,7 +154,8 @@ void original_order(node **node_ptr) {
 	Define a lógica de exibição dos elementos na ordem inversa
 */
 void reverse_order(node **node_ptr) {
-	while((*node_ptr)->previous) {
+	node* tail = *node_ptr;
+	while((*node_ptr)->previous != tail) {
 		printf("%d, ", (*node_ptr)->data);
 		*node_ptr = (*node_ptr)->previous;
 	}
